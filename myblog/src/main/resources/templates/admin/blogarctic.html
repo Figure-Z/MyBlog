@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">.
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/me_back.css">
+    <title>博客管理</title>
+</head>
+<body>
+
+<nav class="ui inverted gird-header" >
+    <div class="ui container">
+        <div class="ui inverted secondary stackable menu">
+            <h2 class="ui olive header item" style="font-family: STSong">管理后台</h2>
+            <a href="#" th:href="@{/admin/blogs}"  class="m-item item m-mobile-hide"><i class="home icon"></i>文章管理</a>
+            <a href="#" th:href="@{/admin/types}"  class="m-item item m-mobile-hide"><i class="clone outline icon"></i>分类管理</a>
+            <a href="#"  class="m-item item m-mobile-hide"><i class="pencil alternate icon"></i>评论管理</a>
+            <a href="#"  class="m-item item m-mobile-hide"><i class="pencil alternate icon"></i>友链管理</a>
+            <div class="right m-item m-mobile-hide menu">
+                <div class="ui dropdown  item">
+                    <div class="text">
+                        <img class="ui avatar image" src="../../static/image/index/head_img.jpg" th:src="@{/static/image/index/head_img.jpg}">
+                        <span>WuMaJinYu</span>
+                    </div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a href="#" th:href="@{/admin/logout}" class="item">注销</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+        <i class="sidebar icon"></i>
+    </a>
+</nav>
+
+
+<div class="m-container m-padded-tb-big">
+    <div class="ui container">
+        <div class="ui segment form">
+
+            <input type="hidden" name="page" >
+
+            <div class="inline fields">
+                <div class="field">
+                    <input type="text" name="title" placeholder="标题">
+                </div>
+                <div class="field">
+                    <div class="ui selection dropdown"><!--任何选择元素初始化为下拉框都会被隐藏，直到JavaScript创建HTML。这是为了避免让内容闪烁，并且元素的高度更好的适应页面。-->
+                        <input type="hidden" name="typeId">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">分类</div>
+                        <div class="menu">
+                            <div th:each="type : ${types}" class="item" data-value="1" th:data-value="${type.id}" th:text="${type.name}">生活日常</div>
+                        </div>
+                    </div>
+                </div>
+
+<!--                <div class="field">-->
+<!--                    <div class="ui checkbox">-->
+<!--                        <input type="checkbox" id="recommend" name="recommend">-->
+<!--                        <label for="recommend">推荐</label>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <div class="field">
+                    <button type="button" id="search-btn" class="ui mini orange basic button"><i class="search icon"></i>搜索</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="table-container">
+        <table class="ui compact teal table">
+            <thead>
+            <tr align="center">
+                <th>ID</th>
+                <th>标题</th>
+                <th>类型</th>
+                <th>推荐</th>
+                <th>状态</th>
+                <th>更新时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr align="center" th:each="blog,iterStat : ${pageInfo.list}">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${blog.title}">java基础</td>
+                <td th:text="${blog.getType().name}">java知识</td>
+                <td th:text="${blog.recommend} ? '是':'否'">是</td>
+                <td th:text="${blog.published} ? '发布':'草稿'">草稿</td>
+                <td th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd HH:mm')}">2020-08-20 08:20</td>
+                <td>
+                    <a href="#" th:href="@{/admin/blog/{id}/update(id=${blog.id})}" class="ui mini teal button">编辑</a>
+                    <a href="#" th:href="@{/admin/blogs/{id}/delete(id=${blog.id})}" onclick="return confirm('确定要删除该文章吗?')" class="ui mini red button">删除</a>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <th colspan="7">
+                <div class="ui mini pagination menu">
+                    <a class="icon item" th:href="@{/admin/blogs(pageNum=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}" th:unless="${pageInfo.isFirstPage}">上一页</a>
+                    <a class="icon item" th:href="@{/admin/blogs(pageNum=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}" th:unless="${pageInfo.isLastPage}">下一页</a>
+                </div>
+                <a href="#" th:href="@{/admin/blog_input}" class="ui mini right floated green basic button">新增</a>
+            </th>
+            </tfoot>
+        </table>
+        </div>
+
+    </div>
+</div>
+<script src="/static/js/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script>
+
+
+    $('.ui.dropdown')
+        .dropdown()
+    ;
+
+    // function page(obj) {
+    //     $("[name='page']").val($(obj).data("page"));
+    //     loaddata();
+    // }
+    //
+    // $("#search-btn").click(function () {
+    //     $("[name='page']").val(0);
+    //     loaddata();
+    // });
+    // function loaddata() {
+    //     $("#table-container").load("/admin/blog/search",{
+    //         title : $("[name='title']").val(),
+    //         typeId : $("[name='typeId']").val(),
+    //         page : $("[name='page']").val()
+    //     });
+    // }
+
+</script>
+</body>
+</html>

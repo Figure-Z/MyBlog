@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>博客发布</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/me_back.css">
+    <link rel="stylesheet" href="/static/lib/editormd/css/editormd.min.css">
+</head>
+<body>
+
+<nav class="ui inverted gird-header" >
+    <div class="ui container">
+        <div class="ui inverted secondary stackable menu">
+            <h2 class="ui olive header item" style="font-family: STSong">管理后台</h2>
+            <a href="#"  class="m-item item m-mobile-hide"><i class="home icon"></i>文章管理</a>
+            <a href="#" th:href="@{/admin/types}"  class="m-item item m-mobile-hide"><i class="clone outline icon"></i>分类管理</a>
+            <a href="#"  class="m-item item m-mobile-hide"><i class="pencil alternate icon"></i>评论管理</a>
+            <a href="#"  class="m-item item m-mobile-hide"><i class="pencil alternate icon"></i>友链管理</a>
+            <div class="right m-item m-mobile-hide menu">
+                <div class="ui dropdown  item">
+                    <div class="text">
+                        <img class="ui avatar image" src="../../static/image/index/head_img.jpg" th:src="@{/static/image/index/head_img.jpg}">
+                        <span>WuMaJinYu</span>
+                    </div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a href="#" th:href="@{/admin/logout}" class="item">注销</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+        <i class="sidebar icon"></i>
+    </a>
+</nav>
+
+
+<div class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+        <form action="#" method="post" class="ui form">
+
+            <div class="field">
+                <div class="ui left labeled input">
+                    <label class="ui teal basic label">名称</label>
+                    <input type="text" id="name" name="name" placeholder="分类名称">
+                </div>
+            </div>
+
+            <div class="ui error message"></div>
+
+            <div class="ui right aligned container">
+                <button type="button" class="ui button" onclick="window.history.go(-1)">返回</button>
+                <button type="button" id="save" class="ui secondary button">提交</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/jquery-3.4.1.min.js"></script>
+<script src="/static/lib/editormd/editormd.min.js"></script>
+<script type="text/javascript" src="/static/lib/layer/2.4/layer.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $("#save").bind("click",function () {
+            save();
+        })
+    })
+
+    function save(){
+
+        let type = {};
+        type.name = $("#name").val();
+
+        $.ajax({
+            url:"/admin/type_input",
+            type:"post",
+            contentType:"application/json",
+            data: JSON.stringify(type),
+            success:function (data) {
+                if (data.status==200){
+                    layer.msg(data.message, {icon: 0});
+                    location.href= "/admin/types";
+                }else{
+                    layer.msg(data.message, {icon: 0});
+                    location.reload();
+                }
+            }
+        })
+    }
+
+
+    $('.ui.dropdown')
+        .dropdown()
+    ;
+
+    $('.ui.form').form({
+       fields:{
+           title:{
+               identifier:'title',
+               rules:[{
+                   type :'empty',
+                   prompt:'标题：请输入博客标题'
+               }]
+           }
+       }
+    });
+
+</script>
+</body>
+</html>
